@@ -7,12 +7,11 @@ from modelo import AprendizajeReforzado, EntrenadorQ
 from ayuda import plot
 
 
-MAXIMA_MEMORIA = 100000
+MAXIMA_MEMORIA = 100_000
 BATCH_tamaño = 1000  #Agrupacion de datos, concepto similar a cluster por ejemplo
 RATIO_APRENDIZAJE = 0.001
+bloque_size = 20
 
-bloque_size = 40
-velocidad_clock = 10
 
 class Agente:
     def __init__(self):
@@ -20,7 +19,6 @@ class Agente:
         self.epsilon = 0 #controla la aleatoriedad
         self.gamma = 0.9  #ratio descuento -> tiene que ser menor que 1
         self.memoria = deque(maxlen=MAXIMA_MEMORIA) #llama a popleft() si se supera la memoria max
-        #TODO:Modelo y entrenador
         self.modelo = AprendizajeReforzado(11, 256, 3) # 11 estados , el escondido lo podemos cambiar y el ultimo es la direccion(seguir,derecha,izquierda)
         self.entrenador = EntrenadorQ(self.modelo, lr= RATIO_APRENDIZAJE, gamma= self.gamma)
 
@@ -48,7 +46,7 @@ class Agente:
 
         estado = [
             #Peligro siguiendo la misma direccion
-            (dir_der and juego.colision(siguiente_derecha)) or (dir_izq and juego.colision(siguiente_izquierda))
+            (dir_der and juego.colision(siguiente_derecha))  or  (dir_izq and juego.colision(siguiente_izquierda))
             or (dir_up and juego.colision(siguiente_arriba)) or (dir_down and juego.colision(siguiente_abajo)),
             
             #Peligro a la derecha
@@ -116,7 +114,7 @@ def entrenar():
     puntaje_total = 0
     mejor_puntaje = 0
     agente = Agente()
-    juego = JuegoSerpienteIA(ancho_ventana=800,alto_ventana=800)
+    juego = JuegoSerpienteIA(ancho_ventana=640,alto_ventana=480)
 
     while True:
         #Obtener estado viejo
@@ -138,6 +136,7 @@ def entrenar():
             juego.resetear()
             agente.numero_juegos += 1
             agente.entrenar_memoria_total()
+            
             if puntaje > mejor_puntaje:
                 mejor_puntaje = puntaje
                 agente.modelo.guardar()

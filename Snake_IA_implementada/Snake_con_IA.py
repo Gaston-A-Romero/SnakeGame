@@ -3,9 +3,11 @@ import random
 from enum import Enum
 from collections import namedtuple
 import numpy 
+
 pygame.init()
 
 #Cosas que cambian del proyecto para poder utilizar la IA
+
 """
 1-Funcion de resetear el juego automaticamente al perder
 2-Agregar la recompensa para que podamos entrenar la IA
@@ -15,16 +17,9 @@ pygame.init()
 
 """
 
-
-
-
-#Variables constantes
-
-ancho_ventana = 800
-alto_ventana = 800
 #cada cuadricula sera de un tamaño de 10 por lo que se podran dar 80*60 
-bloque_size = 40
-velocidad_clock = 30
+bloque_size = 20
+velocidad_clock = 240
 
 
 letra = pygame.font.Font(None, 25)
@@ -47,7 +42,7 @@ class Direccion(Enum):
 Coordenada = namedtuple("Coordenada", 'x, y')
 
 class JuegoSerpienteIA:
-    def __init__(self,ancho_ventana,alto_ventana):
+    def __init__(self,ancho_ventana = 800,alto_ventana = 800):
         self.ancho_ventana = ancho_ventana
         self.alto_ventana = alto_ventana
 
@@ -56,7 +51,7 @@ class JuegoSerpienteIA:
         pygame.display.set_caption("Juego de la Serpiente")
         self.clock = pygame.time.Clock()
         self.resetear()
-        self.iteraciones_pantalla = 0
+        
 
         
 
@@ -74,6 +69,7 @@ class JuegoSerpienteIA:
         self.comida = None
         #Utilizo una funcion de ayuda
         self._poner_comida()
+        self.iteraciones_pantalla = 0
 
     def _poner_comida(self):
         #Hay que poner comida en una posicion al azar que este dentro de los límites de la pantalla
@@ -89,7 +85,8 @@ class JuegoSerpienteIA:
         #Mirar los inputs del usuario
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
-                perder = True
+                pygame.quit()
+                quit()
                     
         #Mover la serpiente con dichos inputs y cambiar la direccion de la cabeza
         self._mover_serpiente(accion) # ----> Actualiza la serpiente 
@@ -102,11 +99,12 @@ class JuegoSerpienteIA:
             perder = True
             recompensa = -10
             return recompensa, perder, self.puntaje
+        
 
         #Poner nueva comida si la serpiente colisiono con la coordenada de la comida y en el caso de no hacerlo le saco el ultimo elemento del cuerpo ya que muevo la cabeza
         if self.cabeza_serpiente == self.comida:
             self.puntaje += 1
-            recompensa = 10
+            recompensa = 30
             self._poner_comida()
         else:
             self.cuerpo_serpiente.pop()
@@ -125,7 +123,7 @@ class JuegoSerpienteIA:
         for punto in self.cuerpo_serpiente:            
             pygame.draw.rect(self.display, VERDE , pygame.Rect(punto.x,punto.y,bloque_size,bloque_size))
             #Efecto
-            pygame.draw.rect(self.display, VERDE2 , pygame.Rect(punto.x + 4 , punto.y + 4 ,30 ,30))
+            pygame.draw.rect(self.display, VERDE2 , pygame.Rect(punto.x + 2 , punto.y + 2 ,15 ,15))
 
         #Funcion de pygame que dibuja pasandole como argumento (pantalla,color,forma(coordenadas))
         pygame.draw.rect(self.display,ROJO,pygame.Rect(self.comida.x,self.comida.y,bloque_size,bloque_size))
@@ -175,7 +173,7 @@ class JuegoSerpienteIA:
         if punto == None:
             punto = self.cabeza_serpiente
         #Choca con los bordes
-        if punto.x > (ancho_ventana - bloque_size) or punto.x < 0 or 0 > punto.y or punto.y > (alto_ventana - bloque_size):
+        if punto.x > (self.ancho_ventana - bloque_size) or punto.x < 0 or 0 > punto.y or punto.y > (self.alto_ventana - bloque_size):
             return True
         #Choca con el cuerpo pero sin contar la cabeza
         if punto in self.cuerpo_serpiente[1:]:
