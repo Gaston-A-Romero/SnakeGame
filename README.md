@@ -1,5 +1,5 @@
-# SnakeGame
+# archivo snake.py
 Juego desarrollado con la libreria pygame en python
 
 #Snake_IA_implementada
-Prueba de aplicar un algoritmo de aprendizaje reforzado al juego anterior
+Utilizando el juego se sacaron los inputs del usuario y se implemento un algoritmo de aprendizaje reforzado.
